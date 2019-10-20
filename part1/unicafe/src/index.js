@@ -2,28 +2,27 @@ import React, { useState } from 'react'
 import ReactDOM from 'react-dom'
 
 const Average = ({ value }) => (
-    <div>
-        average {value}
-    </div>
+    <tr>
+        <td>average</td><td>{value}</td>
+    </tr>
 )
 
 const Positive = ({ value }) => (
-    <div>
-        positive {value} %
-    </div>
+    <tr>
+        <td>positive</td><td>{value} %</td>
+    </tr>
 )
 
 const All = ({ value }) => (
-    <div>
-        all {value}
-    </div>
+    <tr>
+        <td>all</td><td>{value}</td>
+    </tr>
 )
 
 const Statistics = ({ value, text }) => (
-    <div>
-        {text} {value}
-    </div>
-
+    <tr>
+        <td>{text}</td><td>{value}</td>
+    </tr>
 )
 
 const Button = ({ onClick, text }) => (
@@ -47,8 +46,8 @@ const App = () => {
     const handleBadClick = () => {
         setBad(bad + 1)
     }
-    
-    if (good+neutral+bad === 0) {
+
+    if (good + neutral + bad === 0) {
         return (
             <div>
                 <h1>give feedback</h1>
@@ -68,12 +67,16 @@ const App = () => {
             <Button onClick={handleNeutralClick} text="neutral" />
             <Button onClick={handleBadClick} text="bad" />
             <h1>statistics</h1>
-            <Statistics value={good} text="good" />
-            <Statistics value={neutral} text="neutral" />
-            <Statistics value={bad} text="bad" />
-            <Average value={((good * 1) + (bad * -1)) / (good + neutral + bad)} />
-            <All value={good + neutral + bad} />
-            <Positive value={(good / (good + neutral + bad)) * 100}></Positive>
+            <table>
+                <tbody>
+                    <Statistics value={good} text="good" />
+                    <Statistics value={neutral} text="neutral" />
+                    <Statistics value={bad} text="bad" />
+                    <Average value={((good * 1) + (bad * -1)) / (good + neutral + bad)} />
+                    <All value={good + neutral + bad} />
+                    <Positive value={(good / (good + neutral + bad)) * 100}></Positive>
+                </tbody>
+            </table>
         </div>
     )
 }
