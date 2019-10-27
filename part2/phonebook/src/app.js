@@ -29,8 +29,14 @@ const App = () => {
       name: newName,
     }
     
-    setPersons(persons.concat(nameObject))
-    setNewName('')
+    if(persons.map(p => p.name).indexOf(newName)<0)
+    {
+      setPersons(persons.concat(nameObject))
+      setNewName('')
+    }
+    else {
+        window.alert(`${newName} is already added to phonebook`)
+    }
   }
 
   return (
