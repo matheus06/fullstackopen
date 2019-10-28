@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const Country = ({ country }) => {
+const Country = ({ country,getWeather }) => {
     const languages = () => country.languages.map((language, index) =>
         <li key={index} >{language.name}</li>
     )
@@ -22,11 +22,12 @@ const Country = ({ country }) => {
             </ul>
             <img src={country.flag} alt="flag" height="150" width="150" ></img >
         </div>
+        
     )
 }
 
 
-const Countries = ({ countries, filter }) => {
+const Countries = ({ countries, filter, onClick, getWeather }) => {
 
     const countriesToShow = countries.filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
 
@@ -40,7 +41,7 @@ const Countries = ({ countries, filter }) => {
 
     if (countriesToShow.length === 1) {
         const rows = () => countriesToShow.map((country, index) =>
-            <Country key={index} country={country}></Country>
+            <Country key={index} country={country} getWeather={getWeather}></Country>
         )
         return (
             <div>
@@ -50,7 +51,9 @@ const Countries = ({ countries, filter }) => {
     }
 
     const rows = () => countriesToShow.map((country, index) =>
-        <p key={index}> {country.name}</p>
+        <div key={index}>
+            {country.name}  <Button onClick={() => onClick(country.name)} text="show" />
+        </div>
     )
     return (
         <div>
@@ -58,6 +61,10 @@ const Countries = ({ countries, filter }) => {
         </div>
     )
 }
+
+const Button = ({ onClick }) => (
+    <button onClick={onClick}>show</button>
+)
 
 const App = () => {
     const [countries, setCountries] = useState([])
@@ -67,21 +74,26 @@ const App = () => {
         setFilter(event.target.value)
     }
 
+    const showCountry = (value) => {
+        const copy = [...countries].filter(c => c.name === value)
+        setCountries(copy)
+    }
+
+
     useEffect(() => {
-        console.log('effect')
         axios
             .get('https://restcountries.eu/rest/v2/all').then(response => {
-                console.log('promise fulfilled')
                 setCountries(response.data)
             })
     }, [])
+
 
     return (
         <div>
             <div>
                 find countries <input value={filter} onChange={handleFilterChange} />
             </div>
-            <Countries countries={countries} filter={filter}></Countries>
+            <Countries countries={countries} filter={filter} onClick={showCountry} ></Countries>
         </div>
     )
 }
