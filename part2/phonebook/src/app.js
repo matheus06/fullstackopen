@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react'
-import axios from 'axios'
+import personService from './service/person'
 
 const Persons = ({ persons, filter }) => {
 
@@ -49,8 +49,8 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons').then(response => {
+    personService
+      .getAll().then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
       })
@@ -77,8 +77,8 @@ const App = () => {
 
     if (persons.map(p => p.name).indexOf(newName) < 0) {
       
-      axios
-        .post('http://localhost:3001/persons', nameObject)
+      personService
+        .create(nameObject)
         .then(response => {
           setPersons(persons.concat(response.data))
           setNewName('')
