@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
-const Country = ({ country,getWeather }) => {
+const Country = ({ country }) => {
     const languages = () => country.languages.map((language, index) =>
         <li key={index} >{language.name}</li>
     )
@@ -21,13 +21,41 @@ const Country = ({ country,getWeather }) => {
                 {languages()}
             </ul>
             <img src={country.flag} alt="flag" height="150" width="150" ></img >
+            <Weather capital={country.capital}></Weather>
         </div>
-        
+
     )
 }
 
+const Weather = ({ capital }) => {
+    const [weather, setWeather] = useState(null)
 
-const Countries = ({ countries, filter, onClick, getWeather }) => {
+    useEffect(() => {
+        axios
+            .get(`http://api.weatherstack.com/current?access_key=f9a4ae27b938fc9c314a2136043a93d1&query=${capital}`).then(response => {
+                setWeather(response.data)
+            })
+    }, [])
+    return (
+
+        <div>
+            <h2>Weather in {capital}</h2>
+            {weather && <div>
+                <div>
+                    <strong>temperature:</strong>
+                    {weather.current.temperature} Celsius
+                </div>
+                <img src={weather.current.weather_icons} alt="flag" />
+                <div>
+                    <strong>wind:</strong>
+                    {weather.current.wind_speed} kph direction {weather.current.wind_dir}
+                </div>
+            </div>}
+        </div>
+    )
+}
+
+const Countries = ({ countries, filter, onClick }) => {
 
     const countriesToShow = countries.filter(country => country.name.toLowerCase().includes(filter.toLowerCase()))
 
@@ -41,7 +69,7 @@ const Countries = ({ countries, filter, onClick, getWeather }) => {
 
     if (countriesToShow.length === 1) {
         const rows = () => countriesToShow.map((country, index) =>
-            <Country key={index} country={country} getWeather={getWeather}></Country>
+            <Country key={index} country={country} ></Country>
         )
         return (
             <div>
@@ -75,10 +103,9 @@ const App = () => {
     }
 
     const showCountry = (value) => {
-        const copy = [...countries].filter(c => c.name === value)
-        setCountries(copy)
+        const copy = [...countries]
+        setCountries(copy.filter(c => c.name === value))
     }
-
 
     useEffect(() => {
         axios
