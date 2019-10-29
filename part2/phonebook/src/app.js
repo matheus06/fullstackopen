@@ -3,13 +3,10 @@ import React, { useState, useEffect } from 'react'
 import personService from './service/person'
 
 const Persons = ({ persons, filter, removePerson }) => {
-
-
-
   const personsToShow = persons.filter(person => person.name.toLowerCase().includes(filter.toLowerCase()))
 
   const rows = () => personsToShow.map((person) =>
-    <p key={person.id}> {person.name} {person.number}<Button handleClick={() => removePerson(person)} text="delete"/></p>
+    <p key={person.id}> {person.name} {person.number}<Button handleClick={() => removePerson(person)} text="delete" /></p>
   )
   return (
     <div>
@@ -27,7 +24,7 @@ const Filter = ({ filter, handleFilterChange }) => {
   )
 }
 
-const Button = ({handleClick, text}) => (
+const Button = ({ handleClick, text }) => (
   <button onClick={handleClick}>{text}</button>
 )
 
@@ -75,11 +72,11 @@ const App = () => {
   }
 
   const removePerson = (person) => {
-    if (window.confirm("Delete "+person.name+"?")) { 
+    if (window.confirm("Delete " + person.name + "?")) {
       personService
-      .remove(person.id).then(() => {
-        setPersons(persons.filter(p => p.id !== person.id))
-      })
+        .remove(person.id).then(() => {
+          setPersons(persons.filter(p => p.id !== person.id))
+        })
     }
   }
 
@@ -91,7 +88,7 @@ const App = () => {
     }
 
     if (persons.map(p => p.name).indexOf(newName) < 0) {
-      
+
       personService
         .create(nameObject)
         .then(response => {
@@ -102,7 +99,20 @@ const App = () => {
 
     }
     else {
-      window.alert(`${newName} is already added to phonebook`)
+      if (window.confirm(newName + "is already added to phonebook, replace the old number with a new one?")) {
+        var person = persons.find(x => x.name === newName);
+        nameObject.id = person.id
+        personService
+          .update(person.id, nameObject)
+          .then(() => {
+            var foundIndex = persons.findIndex(x => x.name === newName);
+            const copy = [...persons]
+            copy[foundIndex] = nameObject
+            setPersons(copy)
+            setNewName('')
+            setNewNumber('')
+          })
+      }
     }
   }
 
@@ -113,7 +123,7 @@ const App = () => {
       <h2>Add a new</h2>
       <PersonForm onSubmit={addPerson} newName={newName} newNumber={newNumber} handleNameChange={handleNameChange} handleNumberChange={handleNumberChange}></PersonForm>
       <h2>Numbers</h2>
-      <Persons persons={persons} filter={filter} removePerson={(person)=>removePerson(person)}></Persons >
+      <Persons persons={persons} filter={filter} removePerson={(person) => removePerson(person)}></Persons >
     </div>
   )
 }
